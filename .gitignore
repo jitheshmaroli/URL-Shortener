@@ -1,0 +1,19 @@
+# Node.js
+node_modules/
+dist/
+.env
+.env.local
+.env.development
+.env.production
+*.log
+
+# Build outputs
+build/
+coverage/
+
+# Editor
+.vscode/
+*.code-workspace
+
+# Misc
+.DS_Store
