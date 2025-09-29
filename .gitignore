@@ -6,10 +6,17 @@ dist/
 .env.development
 .env.production
 *.log
+logs/
+
+# Vite cache
+.vite/
+url-shortner-frontend/.vite/
 
 # Build outputs
 build/
 coverage/
+dist/
+
 
 # Editor
 .vscode/
