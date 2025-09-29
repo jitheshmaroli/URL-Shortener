@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { connectMongoDB } from './config/mongoConnection';
 import authRoutes from './routes/authRoutes';
+import urlRoutes from './routes/urlRoutes';
 import { env } from './config/env';
 import { errorMiddleware } from './middlewares/errorMiddleware';
 import logger from './utils/logger';
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
+app.use('/api/url', urlRoutes);
 
 app.use(errorMiddleware);
 

@@ -2,18 +2,22 @@ import React, { useState } from "react";
 import { login } from "../services/api";
 import styles from "../styles/Login.module.css";
 import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../constants";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {}
+  );
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
     if (!email) newErrors.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Invalid email format";
+    else if (!/\S+@\S+\.\S+/.test(email))
+      newErrors.email = "Invalid email format";
     if (!password) newErrors.password = "Password is required";
     return newErrors;
   };
@@ -26,7 +30,7 @@ const Login: React.FC = () => {
 
     const res = await login(email, password);
     setMessage(res.success ? "Logged in!" : res.message ?? "Login failed");
-    if (res.success) navigate("/shorten");
+    if (res.success) navigate(ROUTES.SHORTEN);
   };
 
   return (
@@ -66,12 +70,15 @@ const Login: React.FC = () => {
         <button type="submit" className={styles.button}>
           Login
         </button>
-        <p className={message.includes("failed") ? styles.error : styles.success}>
+        <p
+          className={
+            message.includes("failed") ? styles.error : styles.success
+          }>
           {message}
         </p>
       </form>
       <p className={styles.link}>
-        Don't have an account? <a href="/register">Register</a>
+        Don't have an account? <a href={ROUTES.REGISTER}>Register</a>
       </p>
     </div>
   );

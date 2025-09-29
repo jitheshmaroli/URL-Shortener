@@ -1,15 +1,38 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { STATUS_CODES, MESSAGES } from '../constants';
 import logger from '../utils/logger';
 
-export const errorMiddleware = (error: Error, req: Request, res: Response) => {
+export class AppError extends Error {
+  constructor(
+    public message: string,
+    public statusCode: number
+  ) {
+    super(message);
+    this.statusCode = statusCode;
+  }
+}
+
+export const errorMiddleware = (
+  error: Error | AppError,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const statusCode =
+    error instanceof AppError
+      ? error.statusCode
+      : STATUS_CODES.INTERNAL_SERVER_ERROR;
+  const message =
+    error instanceof AppError ? error.message : MESSAGES.SERVER_ERROR;
+
   logger.error('Application error', {
     error: error.message,
-    statusCode: STATUS_CODES.INTERNAL_SERVER_ERROR,
+    statusCode,
     path: req.path,
     method: req.method,
+    stack: error.stack,
   });
-  res
-    .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-    .json({ success: false, message: MESSAGES.SERVER_ERROR });
+
+  res.status(statusCode).json({ success: false, message });
+  next();
 };

@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { RegisterDTO, LoginDTO } from '../dtos/AuthDTO';
 import { MESSAGES } from '../constants';
+import { CreateUrlDTO } from '../dtos/UrlDTO';
 
 export class ValidationService {
   private static authSchema = Joi.object({
@@ -14,11 +15,22 @@ export class ValidationService {
     }),
   });
 
+  private static urlSchema = Joi.object({
+    originalUrl: Joi.string().uri().required().messages({
+      'string.uri': MESSAGES.INVALID_URL,
+      'any.required': MESSAGES.URL_REQUIRED,
+    }),
+  });
+
   static validateRegister(data: RegisterDTO): Joi.ValidationResult {
     return this.authSchema.validate(data, { abortEarly: false });
   }
 
   static validateLogin(data: LoginDTO): Joi.ValidationResult {
     return this.authSchema.validate(data, { abortEarly: false });
+  }
+
+  static validateUrl(data: CreateUrlDTO): Joi.ValidationResult {
+    return this.urlSchema.validate(data, { abortEarly: false });
   }
 }
