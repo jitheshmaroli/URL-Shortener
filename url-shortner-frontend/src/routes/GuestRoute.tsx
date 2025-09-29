@@ -3,9 +3,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { checkAuth } from "../services/api";
 import { ROUTES } from "../constants";
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+const GuestRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const navigate = useNavigate();
 
@@ -14,9 +12,11 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
       try {
         const res = await checkAuth();
         setIsAuthenticated(res.success);
+        if (res.success) {
+          navigate(ROUTES.SHORTEN);
+        }
       } catch {
         setIsAuthenticated(false);
-        navigate(ROUTES.LOGIN);
       }
     };
     verifyAuth();
@@ -24,10 +24,10 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
 
   if (isAuthenticated === null) return null;
   return isAuthenticated ? (
-    <>{children}</>
+    <Navigate to={ROUTES.SHORTEN} replace />
   ) : (
-    <Navigate to={ROUTES.LOGIN} replace />
+    <>{children}</>
   );
 };
 
-export default ProtectedRoute;
+export default GuestRoute;

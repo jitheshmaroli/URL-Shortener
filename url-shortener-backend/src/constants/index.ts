@@ -15,5 +15,8 @@ export const MESSAGES = {
   LOGGED_IN: 'Logged in successfully',
   LOGGED_OUT: 'Logged out successfully',
   UNAUTHORIZED: 'Unauthorized',
+  URL_REQUIRED: 'URL is required',
+  INVALID_URL: 'Invalid URL format',
+  NOT_FOUND: 'URL not found',
   SERVER_ERROR: 'Internal server error',
 };

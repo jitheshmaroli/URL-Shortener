@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { register } from "../services/api";
 import styles from "../styles/Register.module.css";
 import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../constants";
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -22,11 +23,15 @@ const Register: React.FC = () => {
       confirmPassword?: string;
     } = {};
     if (!email) newErrors.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Invalid email format";
+    else if (!/\S+@\S+\.\S+/.test(email))
+      newErrors.email = "Invalid email format";
     if (!password) newErrors.password = "Password is required";
-    else if (password.length < 6) newErrors.password = "Password must be at least 6 characters";
-    if (!confirmPassword) newErrors.confirmPassword = "Confirm password is required";
-    else if (confirmPassword !== password) newErrors.confirmPassword = "Passwords do not match";
+    else if (password.length < 6)
+      newErrors.password = "Password must be at least 6 characters";
+    if (!confirmPassword)
+      newErrors.confirmPassword = "Confirm password is required";
+    else if (confirmPassword !== password)
+      newErrors.confirmPassword = "Passwords do not match";
     return newErrors;
   };
 
@@ -37,8 +42,12 @@ const Register: React.FC = () => {
     if (Object.keys(newErrors).length > 0) return;
 
     const res = await register(email, password);
-    setMessage(res.success ? "Registered! Redirecting to login..." : res.message ?? "Registration failed");
-    if (res.success) setTimeout(() => navigate("/login"), 1500);
+    setMessage(
+      res.success
+        ? "Registered! Redirecting to login..."
+        : res.message ?? "Registration failed"
+    );
+    if (res.success) setTimeout(() => navigate(ROUTES.LOGIN), 1500);
   };
 
   return (
@@ -88,17 +97,22 @@ const Register: React.FC = () => {
             className={styles.input}
             autoComplete="new-password"
           />
-          {errors.confirmPassword && <p className={styles.error}>{errors.confirmPassword}</p>}
+          {errors.confirmPassword && (
+            <p className={styles.error}>{errors.confirmPassword}</p>
+          )}
         </div>
         <button type="submit" className={styles.button}>
           Register
         </button>
-        <p className={message.includes("failed") ? styles.error : styles.success}>
+        <p
+          className={
+            message.includes("failed") ? styles.error : styles.success
+          }>
           {message}
         </p>
       </form>
       <p className={styles.link}>
-        Already have an account? <a href="/login">Login</a>
+        Already have an account? <a href={ROUTES.LOGIN}>Login</a>
       </p>
     </div>
   );
