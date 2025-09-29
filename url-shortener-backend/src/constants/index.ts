@@ -18,5 +18,6 @@ export const MESSAGES = {
   URL_REQUIRED: 'URL is required',
   INVALID_URL: 'Invalid URL format',
   NOT_FOUND: 'URL not found',
+  NO_TOKEN: 'No token provided',
   SERVER_ERROR: 'Internal server error',
 };

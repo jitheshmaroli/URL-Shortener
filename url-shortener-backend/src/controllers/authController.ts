@@ -3,8 +3,7 @@ import { AuthService } from '../services/AuthService';
 import { AuthRepository } from '../repositories/AuthRepository';
 import User from '../models/User';
 import { RegisterDTO, LoginDTO } from '../dtos/AuthDTO';
-import { STATUS_CODES } from '../constants';
-import logger from '../utils/logger';
+import { MESSAGES, STATUS_CODES } from '../constants';
 
 export class AuthController {
   private authService: AuthService;
@@ -21,17 +20,12 @@ export class AuthController {
     try {
       const dto: RegisterDTO = req.body;
       const result = await this.authService.register(dto);
-      logger.info('User registration attempt', { email: dto.email });
       res
         .status(
           result.success ? STATUS_CODES.CREATED : STATUS_CODES.BAD_REQUEST
         )
         .json(result);
     } catch (error) {
-      logger.error('Registration error', {
-        error: (error as Error).message,
-        email: req.body.email,
-      });
       next(error);
     }
   }
@@ -41,14 +35,12 @@ export class AuthController {
       const dto: LoginDTO = req.body;
       const result = await this.authService.login(dto);
       if (result.success && result.token) {
-        logger.info('User logged in successfully', { email: dto.email });
         res.cookie('token', result.token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
         });
-      } else {
-        logger.warn('Login failed', { email: dto.email });
       }
+
       res
         .status(result.success ? STATUS_CODES.OK : STATUS_CODES.BAD_REQUEST)
         .json({
@@ -56,10 +48,6 @@ export class AuthController {
           message: result.message,
         });
     } catch (error) {
-      logger.error('Login error', {
-        error: (error as Error).message,
-        email: req.body.email,
-      });
       next(error);
     }
   }
@@ -67,12 +55,10 @@ export class AuthController {
   async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       res.clearCookie('token');
-      logger.info('User logged out successfully');
       res
         .status(STATUS_CODES.OK)
-        .json({ success: true, message: 'Logged out successfully' });
+        .json({ success: true, message: MESSAGES.LOGGED_IN });
     } catch (error) {
-      logger.error('Logout error', { error: (error as Error).message });
       next(error);
     }
   }
@@ -85,21 +71,16 @@ export class AuthController {
     try {
       const token = req.cookies.token;
       if (!token) {
-        logger.warn('No token provided for auth check');
         res
           .status(STATUS_CODES.UNAUTHORIZED)
-          .json({ success: false, message: 'No token provided' });
+          .json({ success: false, message: MESSAGES.NO_TOKEN });
         return;
       }
       const result = await this.authService.checkAuth(token);
-      logger.debug('Token verification attempt', {
-        token: token.slice(0, 10) + '...',
-      });
       res
         .status(result.success ? STATUS_CODES.OK : STATUS_CODES.UNAUTHORIZED)
         .json(result);
     } catch (error) {
-      logger.error('Auth check error', { error: (error as Error).message });
       next(error);
     }
   }

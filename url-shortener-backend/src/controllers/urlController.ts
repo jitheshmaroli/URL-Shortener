@@ -3,7 +3,7 @@ import { UrlService } from '../services/UrlService';
 import { UrlRepository } from '../repositories/UrlRepository';
 import Url from '../models/Url';
 import { AuthRequest } from '../middlewares/authMiddleware';
-import { STATUS_CODES } from '../constants';
+import { MESSAGES, STATUS_CODES } from '../constants';
 import { CreateUrlDTO } from '../dtos/UrlDTO';
 
 export class UrlController {
@@ -22,7 +22,7 @@ export class UrlController {
       if (!req.user?.userId) {
         res
           .status(STATUS_CODES.UNAUTHORIZED)
-          .json({ success: false, message: 'Unauthorized' });
+          .json({ success: false, message: MESSAGES.UNAUTHORIZED });
         return;
       }
       const dto: CreateUrlDTO = req.body;
@@ -44,7 +44,7 @@ export class UrlController {
       if (!req.user?.userId) {
         res
           .status(STATUS_CODES.UNAUTHORIZED)
-          .json({ success: false, message: 'Unauthorized' });
+          .json({ success: false, message: MESSAGES.UNAUTHORIZED });
         return;
       }
       const page = parseInt(req.query.page as string) || 1;
