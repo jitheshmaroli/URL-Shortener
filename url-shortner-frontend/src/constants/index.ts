@@ -6,7 +6,7 @@ export const ROUTES = {
 } as const;
 
 export const API_URLS = {
-  BASE_URL: "http://localhost:3000/api",
+  BASE_URL: import.meta.env.BASE_URL,
   AUTH: {
     REGISTER: "/auth/register",
     LOGIN: "/auth/login",
