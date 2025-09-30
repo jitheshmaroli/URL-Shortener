@@ -6,7 +6,7 @@ export const ROUTES = {
 } as const;
 
 export const API_URLS = {
-  BASE_URL: import.meta.env.BASE_URL,
+  BASE_URL: import.meta.env.VITE_API_BASE_URL,
   AUTH: {
     REGISTER: "/auth/register",
     LOGIN: "/auth/login",
