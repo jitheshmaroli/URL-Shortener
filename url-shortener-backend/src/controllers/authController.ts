@@ -57,7 +57,7 @@ export class AuthController {
       res.clearCookie('token');
       res
         .status(STATUS_CODES.OK)
-        .json({ success: true, message: MESSAGES.LOGGED_IN });
+        .json({ success: true, message: MESSAGES.LOGGED_OUT });
     } catch (error) {
       next(error);
     }

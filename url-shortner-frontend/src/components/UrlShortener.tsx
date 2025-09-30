@@ -4,6 +4,7 @@ import { RiLogoutCircleRLine } from "react-icons/ri";
 import styles from "../styles/UrlShortener.module.css";
 import type { Url } from "../types/urlTypes";
 import { ROUTES } from "../constants";
+import { useNavigate } from "react-router-dom";
 
 const UrlShortener: React.FC = () => {
   const [originalUrl, setOriginalUrl] = useState("");
@@ -13,6 +14,7 @@ const UrlShortener: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [limit] = useState(10);
+  const navigate = useNavigate();
 
   const fetchUrls = useCallback(
     async (page: number) => {
@@ -44,8 +46,12 @@ const UrlShortener: React.FC = () => {
   };
 
   const handleLogout = async () => {
-    await logout();
-    window.location.href = ROUTES.LOGIN;
+    const res = await logout();
+    if (res.success) {
+      navigate(ROUTES.LOGIN);
+    } else {
+      console.error("Logout failed:", res.message);
+    }
   };
 
   const handlePrevPage = () => {
