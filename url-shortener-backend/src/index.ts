@@ -12,7 +12,14 @@ const app = express();
 const MONGODB_URI = env.MONGODB_URI;
 const PORT = env.PORT;
 
-app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
+app.use(
+  cors({
+    origin: env.CLIENT_URL,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 
