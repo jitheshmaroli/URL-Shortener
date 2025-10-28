@@ -176,6 +176,22 @@
   cursor: not-allowed;
 }
 
+.resetButton {
+  background: transparent;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.resetButton:hover {
+  color: #ff4444;
+}
+
 @media (max-width: 768px) {
   .dashboard {
     padding: 0.5rem;

@@ -48,7 +48,7 @@ export class UrlController {
         return;
       }
       const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
+      const limit = parseInt(req.query.limit as string) || 5;
       const result = await this.urlService.getMyUrls(
         req.user.userId,
         page,
