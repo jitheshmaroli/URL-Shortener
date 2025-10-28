@@ -3,6 +3,7 @@ import { register } from "../services/api";
 import styles from "../styles/Register.module.css";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../constants";
+import { validateForm } from "../utils/validation";
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -16,28 +17,9 @@ const Register: React.FC = () => {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  const validateForm = () => {
-    const newErrors: {
-      email?: string;
-      password?: string;
-      confirmPassword?: string;
-    } = {};
-    if (!email) newErrors.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(email))
-      newErrors.email = "Invalid email format";
-    if (!password) newErrors.password = "Password is required";
-    else if (password.length < 6)
-      newErrors.password = "Password must be at least 6 characters";
-    if (!confirmPassword)
-      newErrors.confirmPassword = "Confirm password is required";
-    else if (confirmPassword !== password)
-      newErrors.confirmPassword = "Passwords do not match";
-    return newErrors;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newErrors = validateForm();
+    const newErrors = validateForm(email, password, confirmPassword);
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 

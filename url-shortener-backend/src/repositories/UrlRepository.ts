@@ -14,4 +14,11 @@ export class UrlRepository
   async findByShortUrl(shortUrl: string): Promise<IUrl | null> {
     return this.model.findOne({ shortUrl }).exec();
   }
+
+  async findByOriginalUrl(
+    userId: string,
+    originalUrl: string
+  ): Promise<IUrl | null> {
+    return this.model.findOne({ userId, originalUrl }).exec();
+  }
 }

@@ -30,6 +30,19 @@ export class UrlService {
       return { success: false, message: MESSAGES.INVALID_URL };
     }
 
+    const normalizedOriginalUrl = new URL(dto.originalUrl).href.replace(
+      /\/$/,
+      ''
+    );
+
+    const existingUrl = await this.urlRepository.findByOriginalUrl(
+      userId,
+      normalizedOriginalUrl
+    );
+    if (existingUrl) {
+      return { success: true, shortUrl: existingUrl.shortUrl };
+    }
+
     const baseUrl = env.BASE_URL;
     if (!baseUrl) throw new Error('BASE_URL is not defined');
 

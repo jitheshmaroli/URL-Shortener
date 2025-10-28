@@ -93,7 +93,7 @@ export const shortenUrl = async (
 
 export const getMyUrls = async (
   page: number = 1,
-  limit: number = 10
+  limit: number = 5
 ): Promise<GetUrlsResponse> => {
   try {
     const res = await api.get(API_URLS.URL.MY_URLS, {

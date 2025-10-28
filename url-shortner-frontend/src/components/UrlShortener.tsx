@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { shortenUrl, getMyUrls, logout } from "../services/api";
-import { RiLogoutCircleRLine } from "react-icons/ri";
+import { RiLogoutCircleRLine, RiCloseLine } from "react-icons/ri";
 import styles from "../styles/UrlShortener.module.css";
 import type { Url } from "../types/urlTypes";
 import { ROUTES } from "../constants";
@@ -43,6 +43,12 @@ const UrlShortener: React.FC = () => {
     } else {
       setMessage(res.message ?? "Failed to shorten URL");
     }
+  };
+
+  const handleReset = () => {
+    setOriginalUrl("");
+    setShortUrl("");
+    setMessage("");
   };
 
   const handleLogout = async () => {
@@ -88,6 +94,16 @@ const UrlShortener: React.FC = () => {
             <button type="submit" className={styles.button}>
               Shorten
             </button>
+            {(originalUrl || shortUrl) && (
+              <button
+                type="button"
+                onClick={handleReset}
+                className={styles.resetButton}
+                aria-label="Reset"
+                title="Clear fields">
+                <RiCloseLine size={20} />
+              </button>
+            )}
           </form>
           {shortUrl && (
             <p className={styles.shortUrl}>

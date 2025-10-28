@@ -9,7 +9,7 @@ export class ValidationService {
       'string.email': MESSAGES.INVALID_CREDENTIALS,
       'any.required': MESSAGES.EMAIL_PASSWORD_REQUIRED,
     }),
-    password: Joi.string().min(6).required().messages({
+    password: Joi.string().min(8).required().messages({
       'string.min': 'Password must be at least 6 characters',
       'any.required': MESSAGES.EMAIL_PASSWORD_REQUIRED,
     }),
