@@ -2,10 +2,15 @@ export interface CreateUrlDTO {
   originalUrl: string;
 }
 
+export interface DeleteUrlDTO {
+  urlId: string;
+}
+
 export interface UrlResponseDTO {
   success: boolean;
   shortUrl?: string;
   message?: string;
+  clickCount?: number;
 }
 
 export interface GetUrlsResponseDTO {
@@ -14,6 +19,7 @@ export interface GetUrlsResponseDTO {
     _id: string;
     originalUrl: string;
     shortUrl: string;
+    clickCount: number;
     createdAt: string;
   }>;
   pagination?: {

@@ -37,4 +37,8 @@ export abstract class BaseRepository<T extends Document>
   async count(query: FilterQuery<T>): Promise<number> {
     return this.model.countDocuments(query).exec();
   }
+
+  async delete(id: string): Promise<void> {
+    await this.model.findByIdAndDelete(id).exec();
+  }
 }

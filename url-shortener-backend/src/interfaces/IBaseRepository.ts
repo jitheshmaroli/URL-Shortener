@@ -6,4 +6,5 @@ export interface IBaseRepository<T extends Document> {
   findOne(query: FilterQuery<T>): Promise<T | null>;
   find(query: FilterQuery<T>, page?: number, limit?: number): Promise<T[]>;
   count(query: FilterQuery<T>): Promise<number>;
+  delete(id: string): Promise<void>;
 }

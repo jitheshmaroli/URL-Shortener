@@ -21,4 +21,8 @@ export class UrlRepository
   ): Promise<IUrl | null> {
     return this.model.findOne({ userId, originalUrl }).exec();
   }
+
+  async findByIdAndUser(id: string, userId: string): Promise<IUrl | null> {
+    return this.model.findOne({ _id: id, userId }).exec();
+  }
 }

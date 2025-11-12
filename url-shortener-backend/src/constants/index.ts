@@ -20,4 +20,5 @@ export const MESSAGES = {
   NOT_FOUND: 'URL not found',
   NO_TOKEN: 'No token provided',
   SERVER_ERROR: 'Internal server error',
+  URL_EXISTS: 'Url is already shortened',
 };

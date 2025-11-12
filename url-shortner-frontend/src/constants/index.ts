@@ -12,9 +12,11 @@ export const API_URLS = {
     LOGIN: "/auth/login",
     LOGOUT: "/auth/logout",
     CHECK_AUTH: "/auth/check",
+    REFRESH: "/auth/refresh",
   },
   URL: {
     SHORTEN: "/url/shorten",
     MY_URLS: "/url/myurls",
+    DELETE: "/url/delete",
   },
 } as const;

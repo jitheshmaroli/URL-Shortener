@@ -18,7 +18,7 @@ export const authMiddleware = (
       .json({ success: false, message: MESSAGES.UNAUTHORIZED });
   }
 
-  const decoded = TokenService.verifyToken(token);
+  const decoded = TokenService.verifyAccessToken(token);
   if (!decoded) {
     return res
       .status(STATUS_CODES.UNAUTHORIZED)

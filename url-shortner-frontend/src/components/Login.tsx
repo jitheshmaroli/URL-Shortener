@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { login } from "../services/api";
+import { login } from "../services/authApi";
 import styles from "../styles/Login.module.css";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../constants";
 import { validateForm } from "../utils/validation";
+import { useAuth } from "../hooks/useAuth";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -14,6 +15,7 @@ const Login: React.FC = () => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { checkAuthStatus } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +32,8 @@ const Login: React.FC = () => {
 
       if (res.success) {
         setMessage("Logged in successfully!");
-        setTimeout(() => navigate(ROUTES.SHORTEN), 1500);
+        await checkAuthStatus();
+        navigate(ROUTES.SHORTEN);
       } else {
         const errorMsg = res.message || "Login failed. Please try again.";
         setMessage(
