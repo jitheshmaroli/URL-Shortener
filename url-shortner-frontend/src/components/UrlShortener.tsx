@@ -31,6 +31,7 @@ const UrlShortener: React.FC = () => {
           setUrls(res.urls);
           setTotalPages(res.pagination.totalPages);
           setMessage("");
+          return res;
         } else {
           setMessage(res.message ?? "Failed to fetch URLs");
           setMessageType("error");
@@ -90,8 +91,14 @@ const UrlShortener: React.FC = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
-  const handleOpenDetails = (url: Url) => {
-    setSelectedUrl(url);
+  const handleOpenDetails = async (url: Url) => {
+    const updatedRes = await fetchUrls(currentPage);
+    if (updatedRes?.success && updatedRes.urls) {
+      const updatedUrl = updatedRes.urls.find((u) => u._id === url._id);
+      setSelectedUrl(updatedUrl || url);
+    } else {
+      setSelectedUrl(url);
+    }
     setIsModalOpen(true);
   };
 
