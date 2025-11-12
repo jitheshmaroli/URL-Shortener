@@ -16,5 +16,6 @@ export const API_URLS = {
   URL: {
     SHORTEN: "/url/shorten",
     MY_URLS: "/url/myurls",
+    DELETE: "/url/delete",
   },
 } as const;

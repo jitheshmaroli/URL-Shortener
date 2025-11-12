@@ -4,6 +4,7 @@ import { env } from '../config/env';
 import { IUrlRepository } from '../interfaces/IUrlRepository';
 import {
   CreateUrlDTO,
+  DeleteUrlDTO,
   GetUrlsResponseDTO,
   UrlResponseDTO,
 } from '../dtos/UrlDTO';
@@ -40,7 +41,10 @@ export class UrlService {
       normalizedOriginalUrl
     );
     if (existingUrl) {
-      return { success: true, shortUrl: existingUrl.shortUrl };
+      return {
+        success: false,
+        message: MESSAGES.URL_EXISTS,
+      };
     }
 
     const baseUrl = env.BASE_URL;
@@ -85,6 +89,7 @@ export class UrlService {
         _id: url._id.toString(),
         originalUrl: url.originalUrl,
         shortUrl: url.shortUrl,
+        clickCount: url.clickCount,
         createdAt: url.createdAt.toISOString(),
       })),
       pagination: {
@@ -98,9 +103,26 @@ export class UrlService {
 
   async redirect(shortUrl: string): Promise<UrlResponseDTO> {
     const url = await this.urlRepository.findByShortUrl(shortUrl);
+
     if (!url) {
       return { success: false, message: MESSAGES.NOT_FOUND };
     }
-    return { success: true, shortUrl: url.originalUrl };
+
+    url.clickCount = url?.clickCount ? url.clickCount + 1 : 1;
+    await url.save();
+    return {
+      success: true,
+      shortUrl: url.originalUrl,
+      clickCount: url.clickCount,
+    };
+  }
+
+  async deleteUrl(dto: DeleteUrlDTO, userId: string): Promise<UrlResponseDTO> {
+    const url = await this.urlRepository.findByIdAndUser(dto.urlId, userId);
+    if (!url) {
+      return { success: false, message: MESSAGES.NOT_FOUND };
+    }
+    await this.urlRepository.delete(url._id);
+    return { success: true, message: 'URL deleted successfully' };
   }
 }

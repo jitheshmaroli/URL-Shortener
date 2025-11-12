@@ -16,5 +16,9 @@ router.get(
   urlController.getMyUrls.bind(urlController)
 );
 router.get('/:shortCode', urlController.redirect.bind(urlController));
-
+router.delete(
+  '/delete/:id',
+  authMiddleware,
+  urlController.deleteUrl.bind(urlController)
+);
 export default router;

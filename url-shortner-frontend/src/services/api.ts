@@ -5,7 +5,11 @@ import type {
   LoginResponse,
   RegisterResponse,
 } from "../types/authTypes";
-import type { GetUrlsResponse, ShortenUrlResponse } from "../types/urlTypes";
+import type {
+  GetUrlsResponse,
+  ShortenUrlResponse,
+  DeleteUrlResponse,
+} from "../types/urlTypes";
 import { API_URLS } from "../constants";
 
 const api: AxiosInstance = axios.create({
@@ -109,6 +113,19 @@ export const getMyUrls = async (
     return {
       success: false,
       message: axiosError.response?.data?.message || "Error fetching URLs",
+    };
+  }
+};
+
+export const deleteUrl = async (urlId: string): Promise<DeleteUrlResponse> => {
+  try {
+    const res = await api.delete(`${API_URLS.URL.DELETE}/${urlId}`);
+    return { success: true, message: res.data.message };
+  } catch (error) {
+    const axiosError = error as AxiosError<ErrorResponse>;
+    return {
+      success: false,
+      message: axiosError.response?.data?.message || "Error deleting URL",
     };
   }
 };
