@@ -1,28 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
-import { checkAuth } from "../services/api";
+import React from "react";
+import { Navigate } from "react-router-dom";
 import { ROUTES } from "../constants";
+import { useAuth } from "../hooks/useAuth";
 
 const GuestRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const navigate = useNavigate();
+  const { isAuthenticated, isLoading } = useAuth();
 
-  useEffect(() => {
-    const verifyAuth = async () => {
-      try {
-        const res = await checkAuth();
-        setIsAuthenticated(res.success);
-        if (res.success) {
-          navigate(ROUTES.SHORTEN);
-        }
-      } catch {
-        setIsAuthenticated(false);
-      }
-    };
-    verifyAuth();
-  }, [navigate]);
+  if (isLoading) {
+    return <div className="loading">Loading...</div>;
+  }
 
-  if (isAuthenticated === null) return null;
   return isAuthenticated ? (
     <Navigate to={ROUTES.SHORTEN} replace />
   ) : (

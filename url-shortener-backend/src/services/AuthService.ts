@@ -32,7 +32,9 @@ export class AuthService {
     return { success: true, message: MESSAGES.USER_REGISTERED };
   }
 
-  async login(dto: LoginDTO): Promise<AuthResponseDTO & { token?: string }> {
+  async login(
+    dto: LoginDTO
+  ): Promise<AuthResponseDTO & { token?: string; refreshToken?: string }> {
     const validation = ValidationService.validateLogin(dto);
     if (validation.error) {
       return {
@@ -51,12 +53,26 @@ export class AuthService {
       return { success: false, message: MESSAGES.INVALID_CREDENTIALS };
     }
 
-    const token = TokenService.generateToken(user._id.toString());
-    return { success: true, message: MESSAGES.LOGGED_IN, token };
+    const token = TokenService.generateAccessToken(user._id.toString());
+    const refreshToken = TokenService.generateRefreshToken(user._id.toString());
+    return { success: true, message: MESSAGES.LOGGED_IN, token, refreshToken };
+  }
+
+  async refresh(
+    refreshToken: string
+  ): Promise<AuthResponseDTO & { token?: string; refreshToken?: string }> {
+    const decoded = TokenService.verifyRefreshToken(refreshToken);
+    if (!decoded || !decoded.userId) {
+      return { success: false, message: MESSAGES.INVALID_CREDENTIALS };
+    }
+
+    const newToken = TokenService.generateAccessToken(decoded.userId);
+    const newRefreshToken = TokenService.generateRefreshToken(decoded.userId);
+    return { success: true, token: newToken, refreshToken: newRefreshToken };
   }
 
   async checkAuth(token: string): Promise<AuthResponseDTO> {
-    const decoded = TokenService.verifyToken(token);
+    const decoded = TokenService.verifyAccessToken(token);
     if (!decoded) {
       return { success: false, message: MESSAGES.UNAUTHORIZED };
     }

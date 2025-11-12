@@ -36,13 +36,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
       <div className={styles.content}>
         <div className={styles.header}>
           <h2>{title}</h2>
-          <button onClick={onClose} className={styles.closeButton} aria-label="Close modal">
+          <button
+            onClick={onClose}
+            className={styles.closeButton}
+            aria-label="Close modal">
             <span>&times;</span>
           </button>
         </div>
-        <div className={styles.body}>
-          {children}
-        </div>
+        <div className={styles.body}>{children}</div>
       </div>
     </div>
   );

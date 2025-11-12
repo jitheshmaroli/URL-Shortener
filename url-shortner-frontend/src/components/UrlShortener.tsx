@@ -1,20 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { shortenUrl, getMyUrls, logout, deleteUrl } from "../services/api";
+import { shortenUrl, getMyUrls, deleteUrl } from "../services/urlApi";
 import { RiLogoutCircleRLine, RiCloseLine } from "react-icons/ri";
 import styles from "../styles/UrlShortener.module.css";
 import type { Url } from "../types/urlTypes";
-import { ROUTES } from "../constants";
-import { useNavigate } from "react-router-dom";
 import Modal from "./Modal";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { useAuth } from "../hooks/useAuth";
 
 const UrlShortener: React.FC = () => {
   const [originalUrl, setOriginalUrl] = useState("");
   const [shortUrl, setShortUrl] = useState("");
   const [urls, setUrls] = useState<Url[]>([]);
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
+  const [messageType, setMessageType] = useState<"success" | "error" | "">("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,17 +21,24 @@ const UrlShortener: React.FC = () => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [urlToDelete, setUrlToDelete] = useState<Url | null>(null);
   const [limit] = useState(5);
-  const navigate = useNavigate();
+  const { logoutUser } = useAuth();
 
   const fetchUrls = useCallback(
     async (page: number) => {
-      const res = await getMyUrls(page, limit);
-      if (res.success && res.urls && res.pagination) {
-        setUrls(res.urls);
-        setTotalPages(res.pagination.totalPages);
-      } else {
-        setMessage(res.message ?? "Failed to fetch URLs");
-        setMessageType('error');
+      try {
+        const res = await getMyUrls(page, limit);
+        if (res.success && res.urls && res.pagination) {
+          setUrls(res.urls);
+          setTotalPages(res.pagination.totalPages);
+          setMessage("");
+        } else {
+          setMessage(res.message ?? "Failed to fetch URLs");
+          setMessageType("error");
+        }
+      } catch (error) {
+        console.error("Error fetching URLs:", error);
+        setMessage("Network error while fetching URLs");
+        setMessageType("error");
       }
     },
     [limit]
@@ -44,22 +50,24 @@ const UrlShortener: React.FC = () => {
 
   const handleShorten = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage('');
-    setMessageType('');
-    const res = await shortenUrl(originalUrl);
-    if (res.success && res.shortUrl) {
-      setShortUrl(res.shortUrl);
-      if (res.message) {
-        setMessage(res.message);
+    setMessage("");
+    setMessageType("");
+    try {
+      const res = await shortenUrl(originalUrl);
+      if (res.success && res.shortUrl) {
+        setShortUrl(res.shortUrl);
+        setMessage(res.message ?? "URL shortened successfully!");
+        setMessageType("success");
+        setCurrentPage(1);
+        fetchUrls(1);
       } else {
-        setMessage("URL shortened successfully!");
+        setMessage(res.message ?? "Failed to shorten URL");
+        setMessageType("error");
       }
-      setMessageType('success');
-      setCurrentPage(1);
-      fetchUrls(1);
-    } else {
-      setMessage(res.message ?? "Failed to shorten URL");
-      setMessageType('error');
+    } catch (error) {
+      console.error("Error shortening URL:", error);
+      setMessage("Network error while shortening URL");
+      setMessageType("error");
     }
   };
 
@@ -67,16 +75,11 @@ const UrlShortener: React.FC = () => {
     setOriginalUrl("");
     setShortUrl("");
     setMessage("");
-    setMessageType('');
+    setMessageType("");
   };
 
-  const handleLogout = async () => {
-    const res = await logout();
-    if (res.success) {
-      navigate(ROUTES.LOGIN);
-    } else {
-      console.error("Logout failed:", res.message);
-    }
+  const handleLogout = () => {
+    logoutUser();
   };
 
   const handlePrevPage = () => {
@@ -99,16 +102,22 @@ const UrlShortener: React.FC = () => {
 
   const handleConfirmDelete = async () => {
     if (!urlToDelete) return;
-    setMessage('');
-    setMessageType('');
-    const res = await deleteUrl(urlToDelete._id);
-    if (res.success) {
-      setMessage("URL deleted successfully");
-      setMessageType('success');
-      fetchUrls(currentPage);
-    } else {
-      setMessage(res.message ?? "Failed to delete URL");
-      setMessageType('error');
+    setMessage("");
+    setMessageType("");
+    try {
+      const res = await deleteUrl(urlToDelete._id);
+      if (res.success) {
+        setMessage("URL deleted successfully");
+        setMessageType("success");
+        fetchUrls(currentPage);
+      } else {
+        setMessage(res.message ?? "Failed to delete URL");
+        setMessageType("error");
+      }
+    } catch (error) {
+      console.error("Error deleting URL:", error);
+      setMessage("Network error while deleting URL");
+      setMessageType("error");
     }
     setIsConfirmOpen(false);
     setUrlToDelete(null);
@@ -172,7 +181,7 @@ const UrlShortener: React.FC = () => {
           {message && (
             <p
               className={
-                messageType === 'error' ? styles.error : styles.success
+                messageType === "error" ? styles.error : styles.success
               }>
               {message}
             </p>
@@ -259,8 +268,18 @@ const UrlShortener: React.FC = () => {
         title="URL Details">
         {selectedUrl && (
           <div>
-            <p><strong>Short URL:</strong> <a href={selectedUrl.shortUrl} target="_blank" rel="noopener noreferrer">{selectedUrl.shortUrl}</a></p>
-            <p><strong>Click Count:</strong> {selectedUrl.clickCount}</p>
+            <p>
+              <strong>Short URL:</strong>{" "}
+              <a
+                href={selectedUrl.shortUrl}
+                target="_blank"
+                rel="noopener noreferrer">
+                {selectedUrl.shortUrl}
+              </a>
+            </p>
+            <p>
+              <strong>Click Count:</strong> {selectedUrl.clickCount}
+            </p>
           </div>
         )}
       </Modal>
@@ -271,18 +290,18 @@ const UrlShortener: React.FC = () => {
         {urlToDelete && (
           <div>
             <p>Are you sure you want to delete this URL?</p>
-            <p className={styles.confirmUrl}><small>{urlToDelete.originalUrl}</small></p>
+            <p className={styles.confirmUrl}>
+              <small>{urlToDelete.originalUrl}</small>
+            </p>
             <div className={styles.confirmButtons}>
               <button
                 onClick={handleConfirmDelete}
-                className={styles.dangerButton}
-              >
+                className={styles.dangerButton}>
                 Delete
               </button>
               <button
                 onClick={handleCloseConfirm}
-                className={styles.cancelButton}
-              >
+                className={styles.cancelButton}>
                 Cancel
               </button>
             </div>

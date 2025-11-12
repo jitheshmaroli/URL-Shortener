@@ -23,4 +23,5 @@ export const env = {
   CLIENT_URL: requiredEnv('CLIENT_URL'),
   BASE_URL: requiredEnv('BASE_URL'),
   NODE_ENV: requiredEnv('NODE_ENV'),
+  JWT_REFRESH_SECRET: requiredEnv('JWT_REFRESH_SECRET'),
 };

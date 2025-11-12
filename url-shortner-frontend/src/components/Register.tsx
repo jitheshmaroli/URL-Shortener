@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { register } from "../services/api";
+import { register } from "../services/authApi";
 import styles from "../styles/Register.module.css";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../constants";
 import { validateForm } from "../utils/validation";
+import { useAuth } from "../hooks/useAuth";
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -15,21 +16,34 @@ const Register: React.FC = () => {
     confirmPassword?: string;
   }>({});
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { checkAuthStatus } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMessage("");
     const newErrors = validateForm(email, password, confirmPassword);
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
-    const res = await register(email, password);
-    setMessage(
-      res.success
-        ? "Registered! Redirecting to login..."
-        : res.message ?? "Registration failed"
-    );
-    if (res.success) setTimeout(() => navigate(ROUTES.LOGIN), 1500);
+    setIsLoading(true);
+    try {
+      const res = await register(email, password);
+      setMessage(
+        res.success
+          ? "Registered! Redirecting to login..."
+          : res.message ?? "Registration failed"
+      );
+      if (res.success) {
+        await checkAuthStatus();
+        navigate(ROUTES.LOGIN);
+      }
+    } catch {
+      setMessage("Registration failed due to a network error.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -48,6 +62,7 @@ const Register: React.FC = () => {
             required
             className={styles.input}
             autoComplete="new-email"
+            disabled={isLoading}
           />
           {errors.email && <p className={styles.error}>{errors.email}</p>}
         </div>
@@ -63,6 +78,7 @@ const Register: React.FC = () => {
             required
             className={styles.input}
             autoComplete="new-password"
+            disabled={isLoading}
           />
           {errors.password && <p className={styles.error}>{errors.password}</p>}
         </div>
@@ -78,20 +94,26 @@ const Register: React.FC = () => {
             required
             className={styles.input}
             autoComplete="new-password"
+            disabled={isLoading}
           />
           {errors.confirmPassword && (
             <p className={styles.error}>{errors.confirmPassword}</p>
           )}
         </div>
-        <button type="submit" className={styles.button}>
-          Register
+        <button type="submit" className={styles.button} disabled={isLoading}>
+          {" "}
+          {isLoading ? "Registering..." : "Register"}
         </button>
-        <p
-          className={
-            message.includes("failed") ? styles.error : styles.success
-          }>
-          {message}
-        </p>
+        {message && (
+          <p
+            className={
+              message.includes("failed") || message.includes("error")
+                ? styles.error
+                : styles.success
+            }>
+            {message}
+          </p>
+        )}
       </form>
       <p className={styles.link}>
         Already have an account? <a href={ROUTES.LOGIN}>Login</a>
