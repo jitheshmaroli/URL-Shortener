@@ -21,6 +21,7 @@ A full-stack URL shortener web application built with the MERN stack and TypeScr
 - **Responsive Design**: Mobile-friendly UI built with CSS Modules
 - **Pagination**: Efficient handling of URL lists with pagination
 - **Secure Authentication**: HttpOnly cookies for secure token storage
+- **Refresh Token Flow**: Automatic access token refresh using longer-lived refresh tokens via Axios interceptors
 - **Error Handling**: Comprehensive error handling and validation
 
 ## 🛠 Tech Stack
@@ -30,12 +31,12 @@ A full-stack URL shortener web application built with the MERN stack and TypeScr
 - **Vite** for fast development and building
 - **React Router** for navigation
 - **CSS Modules** for styled components
-- **Axios** for API calls
+- **Axios** for API calls with response interceptors for token refresh
 
 ### Backend
 - **Node.js** with Express and TypeScript
 - **MongoDB** with Mongoose ODM
-- **JWT** for authentication
+- **JWT** for authentication (stateless access and refresh tokens)
 - **Repository Pattern** for data access layer
 - **CORS** with secure configuration
 - **Cookie Parser** for token management
@@ -70,6 +71,7 @@ A full-stack URL shortener web application built with the MERN stack and TypeScr
    ```env
    NODE_ENV=development
    JWT_SECRET=your_jwt_secret_key
+   JWT_REFRESH_SECRET=your_jwt_refresh_secret_key
    MONGODB_URI=your_mongodb_connection_string
    PORT=3000
    CLIENT_URL=http://localhost:5173
@@ -116,8 +118,9 @@ A full-stack URL shortener web application built with the MERN stack and TypeScr
 
 ### Authentication Routes
 - `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
+- `POST /api/auth/login` - User login (sets access and refresh token cookies)
+- `POST /api/auth/refresh` - Refresh access token using refresh token cookie
+- `POST /api/auth/logout` - User logout (clears token cookies)
 - `GET /api/auth/check` - Verify authentication status
 
 ### URL Routes
@@ -142,11 +145,12 @@ This separation ensures:
 
 ## 🔒 Security Features
 
-- JWT authentication with HttpOnly cookies
+- JWT authentication with HttpOnly cookies for access and refresh tokens
 - Password hashing with bcrypt
 - CORS configuration for specific origins
 - Input validation and sanitization
 - Error handling without exposing sensitive information
+- Stateless refresh tokens with automatic frontend refresh via Axios interceptors
 
 ## 🚀 Deployment
 
@@ -174,24 +178,5 @@ This separation ensures:
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **CORS Errors**
-   - Ensure CLIENT_URL in backend matches frontend domain
-   - Check CORS configuration in backend
-
-2. **Authentication Issues**
-   - Verify JWT_SECRET is set correctly
-   - Check cookie settings for production vs development
-
-3. **Database Connection**
-   - Verify MONGODB_URI is correct
-   - Check network access for MongoDB Atlas
-
----
 
 **Built with ❤️ using the MERN stack and TypeScript**
